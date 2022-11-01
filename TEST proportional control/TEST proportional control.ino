@@ -1,17 +1,29 @@
+/* Encoder Library - Basic Example
+ * http://www.pjrc.com/teensy/td_libs_Encoder.html
+ *
+ * This example code is in the public domain.
+ */
+
+#include <Encoder.h>
+
+// Change these two numbers to the pins connected to your encoder.
+//   Best Performance: both pins have interrupt capability
+//   Good Performance: only the first pin has interrupt capability
+//   Low Performance:  neither pin has interrupt capability
+Encoder myEnc(5, 6);
+//   avoid using pins with LEDs attached
+
 void setup() {
-  // put your setup code here, to run once:
-  double angle = 0;
-  int encodeRes = 2^12 * 4;
-  double angleIn = 90;
-  double encodeFreq = 5;
+  Serial.begin(9600);
+  Serial.println("Basic Encoder Test:");
 }
 
-void loop() {
-  bool digitalRead(2) = encode1;
-  bool digitalRead(3) = encode2;
-  delay(5);
-  if (encode1 != digitalRead(2) || encode2 != digitalRead(3)) {
-    angle = angle + 360/encodeRes;
-  }
+long oldPosition  = -999;
 
+void loop() {
+  long newPosition = myEnc.read();
+  if (newPosition != oldPosition) {
+    oldPosition = newPosition;
+    Serial.println(newPosition);
+  }
 }
