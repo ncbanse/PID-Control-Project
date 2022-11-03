@@ -10,17 +10,17 @@
 //   Best Performance: both pins have interrupt capability
 //   Good Performance: only the first pin has interrupt capability
 //   Low Performance:  neither pin has interrupt capability
-Encoder myEnc(3, 5);
+Encoder myEnc(2, 3);
 //   avoid using pins with LEDs attached
 
 void setup() {
   Serial.begin(9600);
   Serial.println("Basic Encoder Test:");
 }
-
+double desiredAngle = 360;
 long oldPosition  = -999;
-long desiredPosition = 5;
-double throtGain = 1/10;
+double desiredPosition = (desiredAngle * 28)/360;
+double throtGain = 0.01;
 
 void loop() {
   long newPosition = myEnc.read();
@@ -33,6 +33,10 @@ void loop() {
     } if (throtle < 0) {
       throtle = 0;
     }
-    Serial.println(throtle);
+    Serial.print(error);
+    Serial.print("  ");
+    Serial.print(throtle);
+    Serial.print("  ");
+    Serial.println(newPosition);
   }
 }
