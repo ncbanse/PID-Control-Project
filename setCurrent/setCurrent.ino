@@ -10,24 +10,25 @@
 /** Initiate VescUart class */
 VescUart UART;
 
-float current = 1.0; /** The current in amps */
+float current = 5.0; /** The current in amps */
+float RPM = 600;
 
 void setup() {
   Serial.begin(9600);
   /** Setup UART port (Serial1 on Atmega32u4) */
-  Serial1.begin(19200);
   
-  while (!Serial1) {;}
+  while (!Serial) {;}
 
   /** Define which ports to use as UART */
-  UART.setSerialPort(&Serial1);
+  UART.setSerialPort(&Serial);
 }
 
 void loop() {
   
   /** Call the function setCurrent() to set the motor current */
   UART.setCurrent(current);
-
+  dellay(50);
+  current -= .1;
   // UART.setBrakeCurrent(current);
   
 }
