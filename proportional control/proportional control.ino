@@ -6,37 +6,53 @@
 
 #include <Encoder.h>
 
-// Change these two numbers to the pins connected to your encoder.
-//   Best Performance: both pins have interrupt capability
-//   Good Performance: only the first pin has interrupt capability
-//   Low Performance:  neither pin has interrupt capability
 Encoder myEnc(2, 3);
-//   avoid using pins with LEDs attached
+
+#include <Servo.h>
+
+byte servoPin = 9;
+Servo servo;
+
+//int RX = 0;
+//int TX = 1;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("Basic Encoder Test:");
+  servo.attach(servoPin);
+
+  servo.writeMicroseconds(1500); // send "stop" signal to ESC.
+
+  delay(7000); // delay to allow the ESC to recognize the stopped signal
 }
-double desiredAngle = 360;
+
 long oldPosition  = -999;
-double desiredPosition = (desiredAngle * 28)/360;
-double throtGain = 0.01;
+double desiredPosition = 2800;
+double throtGain = 0.001;
 
 void loop() {
+  while (Serial.available() == 0);
+  int val = Serial.parseInt(); 
   long newPosition = myEnc.read();
   if (newPosition != oldPosition) {
     oldPosition = newPosition;
     long error = desiredPosition - newPosition;
-    double throtle = (error * throtGain) + 0.5;
-    if (throtle > 1) {
-      throtle = 1;
-    } if (throtle < 0) {
-      throtle = 0;
+    double throtle = (error * throtGain);
+    if (throtle > .5) {
+      throtle = .5;
+    } if (throtle < -.5) {
+      throtle = -.5;
     }
+    throtle += .5;
+    throtle = throtle * 800;
+    throtle += 1100;
+    val = throtle;
     Serial.print(error);
+    Serial.print("  ");
+    Serial.print(throtle / 255);
     Serial.print("  ");
     Serial.print(throtle);
     Serial.print("  ");
     Serial.println(newPosition);
+    servo.writeMicroseconds(val); // Send signal to ESC.
   }
 }
